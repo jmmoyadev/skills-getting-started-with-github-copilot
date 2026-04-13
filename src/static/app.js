@@ -20,28 +20,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Crear lista de participantes
-        let participantsHTML = "<ul class='participants-list'>";
+        const title = document.createElement("h4");
+        title.textContent = name;
+
+        const description = document.createElement("p");
+        description.textContent = details.description;
+
+        const schedule = document.createElement("p");
+        const scheduleLabel = document.createElement("strong");
+        scheduleLabel.textContent = "Schedule:";
+        schedule.appendChild(scheduleLabel);
+        schedule.appendChild(document.createTextNode(` ${details.schedule}`));
+
+        const availability = document.createElement("p");
+        const availabilityLabel = document.createElement("strong");
+        availabilityLabel.textContent = "Availability:";
+        availability.appendChild(availabilityLabel);
+        availability.appendChild(document.createTextNode(` ${spotsLeft} spots left`));
+
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+
+        const participantsLabel = document.createElement("strong");
+        participantsLabel.textContent = "Participants:";
+        participantsSection.appendChild(participantsLabel);
+
+        const participantsList = document.createElement("ul");
+        participantsList.className = "participants-list";
+
         if (details.participants.length > 0) {
           details.participants.forEach(email => {
-            participantsHTML += `<li class="participant-item"><span class="participant-email">${email}</span><button class="delete-participant" title="Remove" data-activity="${name}" data-email="${email}">&#128465;</button></li>`;
+            const participantItem = document.createElement("li");
+            participantItem.className = "participant-item";
+
+            const participantEmail = document.createElement("span");
+            participantEmail.className = "participant-email";
+            participantEmail.textContent = email;
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete-participant";
+            deleteButton.title = "Remove";
+            deleteButton.setAttribute("data-activity", name);
+            deleteButton.setAttribute("data-email", email);
+            deleteButton.innerHTML = "&#128465;";
+
+            participantItem.appendChild(participantEmail);
+            participantItem.appendChild(deleteButton);
+            participantsList.appendChild(participantItem);
           });
         } else {
-          participantsHTML += `<li class='no-participants'>No participants yet</li>`;
+          const noParticipantsItem = document.createElement("li");
+          noParticipantsItem.className = "no-participants";
+          noParticipantsItem.textContent = "No participants yet";
+          participantsList.appendChild(noParticipantsItem);
         }
-        participantsHTML += "</ul>";
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          <div class="participants-section">
-            <strong>Participants:</strong>
-            ${participantsHTML}
-          </div>
-        `;
+        participantsSection.appendChild(participantsList);
 
+        activityCard.appendChild(title);
+        activityCard.appendChild(description);
+        activityCard.appendChild(schedule);
+        activityCard.appendChild(availability);
+        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Delegar eventos de borrado
